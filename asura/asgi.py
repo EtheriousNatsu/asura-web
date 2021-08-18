@@ -6,12 +6,11 @@
 @time: 2021/8/18	
 """
 import os
-from configurations import importer
-from channels.asgi import get_channel_layer
+import configurations
+from channels.routing import get_default_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "asura.config")
 os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
+configurations.setup()
 
-importer.install()
-
-channel_layer = get_channel_layer()
+application = get_default_application()
