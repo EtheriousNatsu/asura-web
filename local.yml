@@ -24,7 +24,9 @@ services:
     env_file:
       - .envs/.local/.django
     command: >
-      bash -c "python wait_for_postgres.py && ./manage.py runserver 0.0.0.0:8000"
+      bash -c "python wait_for_postgres.py &&
+      ./manage.py migrate &&
+      ./manage.py runserver 0.0.0.0:8000"
     networks:
       service:
         aliases:
