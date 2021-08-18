@@ -8,4 +8,4 @@ WORKDIR /app
 
 # 安装Python依赖包
 COPY ./requirements ./requirements
-RUN pip install -r requirements/local.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip install -r requirements/production.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
