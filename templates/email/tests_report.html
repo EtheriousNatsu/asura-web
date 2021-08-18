@@ -1,0 +1,184 @@
+{% load static %}
+{% load extras_tags %}
+<!DOCTYPE html>
+<html lang="UTF-8">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <style type="text/css">
+        .TestPass {
+            border-left: solid 5px #5cb85c !important;
+        }
+
+        .TestFail {
+            border-left: solid 5px #d9534f !important;
+        }
+
+        .TestRunPassed {
+            color: #5cb85c !important;
+        }
+
+        .TestRunFailed {
+            color: #d9534f !important;
+        }
+    </style>
+    <title>tests report</title>
+</head>
+
+<body>
+    <div style="min-width:620px;max-width:960px">
+        <!-- 左上角 -->
+        <div style="vertical-align:top;display:inline-block;width:66%;text-align:left">
+            <h3 style="margin-top:0;margin-bottom:0;vertical-align:top;font-size:1.75rem">
+                <span class="{{suite.status}}" style="margin-right:5px;">
+                    •
+                </span>
+                {{ tests_count_description }}
+                <small style="font-size:80%;font-weight:normal;color:#818a91">
+                    {{ tests_assertions_description }}
+                </small>
+            </h3>
+            <p style="margin-top:0;margin-bottom:0;color:#818a91" class=" text-muted">
+                <a style="color:#818a91" class=" text-muted" target="_blank" href="{{ run_link }}">
+                    {{ run_id }}
+                </a>
+                <strong> · </strong>
+                <a style="color:#818a91" class=" text-muted" target="_blank" href="{{ setting_link }}">
+                    {{ execution_environment_name }}
+                </a>
+                <strong> · </strong>
+                <a style="color:#818a91" class=" text-muted" target="_blank" href="{{ results_link }}">
+                    <span>
+                        {{ trigger_mode }}
+                    </span>
+                </a>
+            </p>
+            <p style="margin-top:0;margin-bottom:20px;color:#818a91" class="text-muted">
+                <a target="_blank"
+                    style="color:black;margin-top:10px;text-decoration:none;padding:.25rem .75rem;font-size:.875rem;line-height:1.5;border-radius:.2rem;display:inline-block;font-weight:normal;text-align:center;white-space:nowrap;vertical-align:middle;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;border:1px solid transparent;background-color:transparent;background-image:none;border-color:#d9534f"
+                    href="{{ run_link }}">
+                    View full result
+                </a>
+            </p>
+        </div>
+
+        <!-- 右上角 -->
+        <div style="display:inline-block;width:33%;text-align:right">
+            <img style="margin-right:10px;vertical-align:middle" src="{{ service_icon_link }}" width="35">
+            <span>
+                <strong>
+                    <a target="_blank" href="{{ service_link|first }}">
+                        {{ service_link|last }}
+                    </a>
+                </strong>
+            </span>
+            <br>
+            <a target="_blank" style="text-decoration:underline;color:#818a91" class=" text-muted"
+                href="{{ execution_environment_link|first }}">
+                {{ execution_environment_link|last }}
+            </a>
+            <br>
+            <span style="color:#818a91" class=" text-muted">
+                {% now "M j Y H:i A" %}
+            </span>
+        </div>
+
+
+        <div>
+            <!-- todo -->
+            <!-- <div style="margin-bottom:25px">
+                <h5 style="margin:0;font-size:1.25rem">Assertions overview</h5>
+                <div>
+                    <div style="margin-bottom:10px;color:#818a91" class=" text-muted">
+
+                    </div>
+                    <div></div>
+                </div>
+            </div> -->
+            <div>
+                <h5 style="margin:0;font-size:1.25rem">Test results</h5>
+                <div class=" text-muted" style="margin-bottom:10px;color:#818a91">
+                    {{ tests_status_description|first }}
+                    <strong> · </strong>
+                    {{ tests_status_description|last }}
+                </div>
+                <div>
+                    {% for result in tests_results %}
+                    <div class="{{ result.result }}"
+                        style="border:solid 1px #eee;padding:10px;border-radius:3px;margin-bottom:10px">
+                        <div class=" text-truncate"
+                            style="vertical-align:top;display:inline-block;width:33%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            <div style="font-size:13px;margin-top:0;margin-bottom:0">
+                                <a target="_blank" href="{{ result|get_test_link }}">
+                                    <strong>{{ result.test.name }}</strong>
+                                </a>
+                                <span class=" text-muted" style="margin-left:5px;color:#818a91">
+                                    {{result.requestMethod}} {{result.requestPath}}
+                                </span>
+                            </div>
+                        </div>
+                        <div style="text-align:center;display:inline-block;vertical-align:top;width:33%">
+                            <div style="font-size:13px;margin-top:0;margin-bottom:0">
+                                {{ result|get_result_assertions_desc:"failed" }}
+                                <strong> · </strong>
+                                {{ result|get_result_assertions_desc:"passed" }}
+                            </div>
+                        </div>
+                        <div style="text-align:right;display:inline-block;width:33%;vertical-align:top">
+                            <div style="font-size:13px;margin-top:0;margin-bottom:0">
+                                {{ result.responseStatusCode|concat_strings:" status code" }}
+                                <span>
+                                    <strong> · </strong>
+                                    <span style="margin-right:10px">
+                                        {{ result.millisecond_response_time|concat_strings:" ms"}}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        {% if result.assertions.failed %}
+                        <div>
+                            <p class=" text-muted" style="margin-top:5px;margin-bottom:0;color:#818a91">
+                                <strong>Failed assertions</strong>
+                                {% for failed_assertion in result.assertions.failed %}
+
+                                <div>
+                                    <span
+                                        style="display:inline-block;padding:.25em .4em;font-size:75%;font-weight:bold;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25rem;background-color:#d9534f">
+                                        FAIL
+                                    </span>
+                                    <span>
+                                        {{ failed_assertion.source|get_assertion_name }}
+                                    </span>
+                                    <small>
+                                        <var>{{ failed_assertion.property|default_if_none:"" }}</var>
+                                    </small>
+                                    <span>
+                                        {{ failed_assertion.comparator|get_assertion_comparison }}
+                                    </span>
+                                    <small>
+                                        <var>{{ failed_assertion.target }}</var>
+                                    </small>
+                                    <div
+                                        style="word-break:break-word;word-wrap:break-word;margin-top:-5px;margin-bottom:10px;padding-left:35px">
+                                        <small>
+                                            <strong>Reason: </strong>
+                                            <span>{{ failed_assertion.errors|first }}</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

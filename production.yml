@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:11.6
+    container_name: prod_postgres_service
+    ports:
+      - "5432:5432"
+    networks:
+      service:
+        aliases:
+          - postgres
+  django:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: prod_asura_service
+    container_name: prod_django_service
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .envs/.production/.django
+    command: >
+      bash -c "python wait_for_postgres.py &&
+      ./manage.py migrate &&
+      daphne -b 0.0.0.0 -p 8000 asura.asgi:application"
+    networks:
+      service:
+        aliases:
+          - django
+
+  redis:
+    image: redis:latest
+    container_name: prod_asura_redis
+    ports:
+      - "6379:6379"
+    networks:
+      service:
+        aliases:
+          - redis
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./compose/production/celery/Dockerfile
+    image: prod_asura_celery
+    container_name: prod_asura_celery
+    volumes:
+      - .:/app
+    env_file:
+      - .envs/.production/.django
+    command: >
+      sh -c "/wait &&
+      celery -A asura worker --loglevel=info &&
+      celery -A asura beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    environment:
+      WAIT_HOSTS: postgres:5432, redis:6379, django:8000
+    depends_on:
+      - redis
+      - postgres
+      - django
+    networks:
+      - service
+
+
+networks:
+  service:

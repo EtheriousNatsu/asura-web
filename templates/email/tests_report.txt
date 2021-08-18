@@ -1,0 +1,1 @@
+[{{service_link|last}}/{{execution_environment_name}}] {{subject_tests_status_description}} {{trigger_mode}} (by {{triggerBy}})

@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:11.6
+    container_name: test_postgres_service
+    ports:
+      - "5432:5432"
+    networks:
+      service:
+        aliases:
+          - postgres
+  django:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: test_asura_service
+    container_name: test_django_service
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .envs/.local/.django
+    command: >
+      bash -c "python wait_for_postgres.py && ./manage.py runserver 0.0.0.0:8000"
+    networks:
+      service:
+        aliases:
+          - django
+  redis:
+    image: redis:latest
+    container_name: test_asura_redis
+    ports:
+      - "6379:6379"
+    networks:
+      service:
+        aliases:
+          - redis
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./compose/local/celery/Dockerfile
+    image: test_asura_celery
+    container_name: test_asura_celery
+    volumes:
+      - .:/app
+    env_file:
+      - .envs/.local/.celery
+      - .envs/.local/.django
+    command: >
+      sh -c "/wait && celery -A asura worker --beat --scheduler django --loglevel=info"
+    environment:
+      WAIT_HOSTS: postgres:5432, redis:6379, django:8000
+    depends_on:
+      - redis
+      - postgres
+      - django
+    networks:
+      - service
+
+networks:
+  service:
