@@ -3,7 +3,7 @@
 
 # 功能简介
 该测试平台是仿照[assertible]()实现的，已实现[assertible]()的大部分主要功能，感兴趣的可以参考assertible的[使用手册](https://assertible.com/docs)
-进行体验，[体验地址]()
+进行体验，[体验地址](http://120.79.132.106)
 
 # 技术栈
 * Django
