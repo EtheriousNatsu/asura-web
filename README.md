@@ -79,8 +79,6 @@ docker-compose -f local.yml up
 | EMAIL_PORT  | ${邮箱服务器端口} |
 | EMAIL_HOST_USER  |  ${邮箱账号}|
 | EMAIL_HOST_PASSWORD  |  ${邮箱密码}|
-| STATIC_URL  |  ${项目服务器地址}}|
-
 
 2.使用命令启动服务: `docker-compose -f production.yml up -d`
 
