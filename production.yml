@@ -65,6 +65,24 @@ services:
     networks:
       - service
 
+  celery_beat:
+    image: prod_asura_celery:latest
+    container_name: prod_celery_beat_service
+    volumes:
+      - .:/app
+    env_file:
+      - .envs/.production/.django
+    command: >
+      sh -c "/wait && celery -A asura beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    environment:
+      WAIT_HOSTS: postgres:5432, redis:6379, django:8000
+    depends_on:
+      - redis
+      - postgres
+      - django
+    networks:
+      - service
+
 
 networks:
   service:
