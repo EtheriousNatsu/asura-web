@@ -74,11 +74,13 @@ docker-compose -f local.yml up
 
 |   DJANGO_SECRET_KEY  | ${Django生产环境秘钥}  |
 |  :-----  | :-----  |
-| SERVICE_HOST  | ${前端项目服务器地址} |
+| SERVICE_HOST  | ${项目服务器地址} |
 | EMAIL_HOST  | ${邮箱服务器地址} |
 | EMAIL_PORT  | ${邮箱服务器端口} |
 | EMAIL_HOST_USER  |  ${邮箱账号}|
 | EMAIL_HOST_PASSWORD  |  ${邮箱密码}|
+| STATIC_URL  |  ${项目服务器地址}}|
+
 
 2.使用命令启动服务: `docker-compose -f production.yml up -d`
 

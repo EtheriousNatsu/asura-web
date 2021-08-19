@@ -23,4 +23,4 @@ class Production(Common):
         Common.STATIC_ROOT
     ]
 
-    STATIC_URL = os.getenv('STATIC_URL')
+    STATIC_URL = 'http://{service_host}/django/static'.format(service_host=os.getenv('SERVICE_HOST'))

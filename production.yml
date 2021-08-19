@@ -53,9 +53,7 @@ services:
     env_file:
       - .envs/.production/.django
     command: >
-      sh -c "/wait &&
-      celery -A asura worker --loglevel=info &&
-      celery -A asura beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+      sh -c "/wait && celery -A asura worker --loglevel=info"
     environment:
       WAIT_HOSTS: postgres:5432, redis:6379, django:8000
     depends_on:
