@@ -92,3 +92,6 @@ docker-compose -f local.yml up
 | 初始数据库  | postgres |
 | 用户名  | postgres |
 | 密码  |  |
+
+PS:生产环境，数据库放在容器里面，容器一旦删除，数据就会丢失。如果需要查询直接登陆到容器内使用
+`psql`查询
